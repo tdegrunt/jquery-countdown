@@ -3,7 +3,11 @@
  *
  * Copyright (c) 2009 Martin Conte Mac Donell <Reflejo@gmail.com>
  * Dual licensed under the MIT and GPL licenses.
+ *
  * http://docs.jquery.com/License
+ *
+ * IE fix by Andrea Cardinale <a.cardinale@webandtech.it> [23 September 2009]
+ * IE fix added by Giguashvili, Levan <levangig@gmail.com> [04 April 2011]
  */
 jQuery.fn.countdown = function(userOptions)
 {
@@ -26,18 +30,19 @@ jQuery.fn.countdown = function(userOptions)
   var createDigits = function(where) 
   {
     var c = 0;
+    var tempStartTime = options.startTime;
     // Iterate each startTime digit, if it is not a digit
     // we'll asume that it's a separator
     for (var i = 0; i < options.startTime.length; i++)
     {
-      if (parseInt(options.startTime[i]) >= 0) 
+      if (parseInt(tempStartTime.charAt(i)) >= 0) 
       {
-        elem = $('<div id="cnt_' + i + '" class="cntDigit" />').css({
+        elem = jQuery('<div id="cnt_' + i + '" class="cntDigit" />').css({
           height: options.digitHeight * options.digitImages * 10, 
           float: 'left', background: 'url(\'' + options.image + '\')',
           width: options.digitWidth});
         digits.push(elem);
-        margin(c, -((parseInt(options.startTime[i]) * options.digitHeight *
+        margin(c, -((parseInt(tempStartTime.charAt(i)) * options.digitHeight *
                               options.digitImages)));
         digits[c].__max = 9;
         // Add max digits, for example, first digit of minutes (mm) has 
@@ -59,10 +64,12 @@ jQuery.fn.countdown = function(userOptions)
         ++c;
       }
       else 
-        elem = $('<div class="cntSeparator"/>').css({float: 'left'})
-                .text(options.startTime[i]);
+        elem = jQuery('<div class="cntSeparator"/>').css({float: 'left'})
+                .text(tempStartTime.charAt(i));
 
-      where.append(elem)
+	  where.append('<div>');
+      where.append(elem);
+	  where.append('</div>');
     }
   };
   
@@ -105,9 +112,8 @@ jQuery.fn.countdown = function(userOptions)
     }
   };
 
-  $.extend(options, userOptions);
+  jQuery.extend(options, userOptions);
   this.css({height: options.digitHeight, overflow: 'hidden'});
   createDigits(this);
   interval = setInterval(moveStep(digits.length - 1), 1000);
 };
-
