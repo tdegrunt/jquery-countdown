@@ -17,7 +17,6 @@ jQuery.fn.countdown = function(userOptions)
     // startTime and format MUST follow the same format.
     // also you cannot specify a format unordered (e.g. hh:ss:mm is wrong)
     format: "dd:hh:mm:ss",
-    startTime: "01:12:32:55",
     digitImages: 6,
     digitWidth: 53,
     digitHeight: 77,
@@ -25,6 +24,50 @@ jQuery.fn.countdown = function(userOptions)
     image: "digits.png"
   };
   var digits = [], interval;
+
+  var getTime = function() {
+    var result;
+
+    dateNow = new Date();	//grab current date
+    amount = options.targetDate.getTime() - dateNow.getTime();	//calc milliseconds between dates
+    delete dateNow;
+
+    // if time is already past
+    if(amount < 0){
+      result = "00:00:00:00";
+    }
+    // else date is still good
+    else{
+      days=0;hours=0;mins=0;secs=0;out="";
+
+      amount = Math.floor(amount/1000);//kill the "milliseconds" so just secs
+
+      days=Math.floor(amount/86400);//days
+      amount=amount%86400;
+
+      hours=Math.floor(amount/3600);//hours
+      amount=amount%3600;
+
+      mins=Math.floor(amount/60);//minutes
+      amount=amount%60;
+
+      secs=Math.floor(amount);//seconds
+
+      if(days<10) out+= "0";
+      out += days+":";
+      
+      if(hours<10) out+= "0";
+      out += hours+":";
+
+      if(mins<10) out+= "0";
+      out += mins+":";
+
+      if(secs<10) out+= "0";
+      out += secs;
+
+      return(out);
+    }
+  };
 
   // Draw digits in given container
   var createDigits = function(where) 
@@ -114,6 +157,9 @@ jQuery.fn.countdown = function(userOptions)
 
   jQuery.extend(options, userOptions);
   this.css({height: options.digitHeight, overflow: 'hidden'});
+  if (!options.startTime) {
+    options.startTime = getTime();
+  }
   createDigits(this);
   interval = setInterval(moveStep(digits.length - 1), 1000);
 };
